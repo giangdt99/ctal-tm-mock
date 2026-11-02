@@ -101,6 +101,25 @@ table.bd td,table.bd th{padding:6px 8px;border-bottom:1px solid var(--line);text
 .qchips button{border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:6px;padding:2px 8px;font-size:12.5px}
 .qchips button.ok{background:var(--ok2);border-color:var(--ok);color:var(--ink)}.qchips button.no{background:var(--bad2);border-color:var(--bad);color:var(--ink)}
 .qchips button:disabled{opacity:.55;cursor:default}
+.ov h2{font-size:22px;margin:0 0 6px}.ov h3{font-size:16px;margin:22px 0 8px}
+.ov .lead{font-size:16px;margin:8px 0}
+.flow{display:flex;gap:6px;align-items:stretch;flex-wrap:wrap;margin:10px 0}
+.fb{flex:1;min-width:130px;border:1.5px solid var(--pri);background:var(--pri2);border-radius:10px;padding:8px 10px;text-align:center;cursor:pointer;font-size:13.5px;color:var(--ink)}
+.fb small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.fb.alt{border-color:var(--ok);background:var(--ok2)}
+.arr{display:grid;place-items:center;color:var(--mut);font-size:18px}
+.around{border:1.5px dashed var(--line);border-radius:10px;padding:8px 10px;margin-top:6px;font-size:13.5px;text-align:center}
+.around button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:2px 10px;margin:3px;font-size:12.5px}
+.chg{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+.chc{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--card)}
+.chc h4{margin:0 0 2px;font-size:15px}
+.secrow{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:8px 6px;border-top:1px solid var(--line);cursor:pointer}
+.secrow:hover{background:var(--pri2)}
+.secrow b{font-size:14px}.secrow .d{font-size:13.5px}.secrow .a{font-size:12.5px;color:var(--mut);margin-top:2px}
+.w{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--mut);margin-top:4px}
+.w .bar{flex:1;margin:0;height:7px}
+.steps{counter-reset:s;padding:0;list-style:none}.steps li{counter-increment:s;margin:8px 0;padding-left:34px;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}
 footer{margin:30px 0 10px;color:var(--mut);font-size:12.5px;text-align:center}
 </style>
 </head>
@@ -183,7 +202,7 @@ function related(id) {
 function tocHtml() {
   const q = (view.q || '').toLowerCase().trim();
   const hit = t => !q || t.id.includes(q) || t.title.en.toLowerCase().includes(q) || t.title.vi.toLowerCase().includes(q) || (t.terms || []).some(x => x.en.toLowerCase().includes(q) || x.vi.toLowerCase().includes(q));
-  let h = '', ch = '', sc = '';
+  let h = `<button data-theory="overview" class="${view.id === 'overview' ? 'on' : ''}"><b>${L('Overview', 'Tổng quan')}</b></button>`, ch = '', sc = '';
   THEORY.filter(hit).forEach(t => {
     if (t.id === 'exam') { h += `<button data-theory="exam" class="${view.id === 'exam' ? 'on' : ''}">${esc(lang === 'vi' ? t.title.vi : t.title.en)}</button>`; return; }
     const c = t.id[0], s = t.id.split('.').slice(0, 2).join('.');
@@ -193,8 +212,77 @@ function tocHtml() {
   });
   return h || `<div class="sub small">${L('No match', 'Không có kết quả')}</div>`;
 }
+
+const OV = {
+ chapters: [
+  {c:'1', q:26, p:46, en:'Managing the test activities', vi:'Quản lý các hoạt động kiểm thử',
+   d:{en:'The "how do we run testing" chapter: process, context, risk, strategy, improvement, tools.', vi:'Chương "chạy việc kiểm thử như thế nào": quy trình, bối cảnh, rủi ro, chiến lược, cải tiến, công cụ.'}},
+  {c:'2', q:15, p:27, en:'Managing the product', vi:'Quản lý sản phẩm',
+   d:{en:'The "what do we know about quality" chapter: metrics & reports, estimates, defects.', vi:'Chương "ta biết gì về chất lượng": số đo & báo cáo, ước lượng, quản lý lỗi.'}},
+  {c:'3', q:9, p:15, en:'Managing the team', vi:'Quản lý đội ngũ',
+   d:{en:'The "people" chapter: team skills and proving the value of testing to stakeholders.', vi:'Chương "con người": kỹ năng đội và chứng minh giá trị kiểm thử cho các bên liên quan.'}}
+ ],
+ secs: [
+  {id:'1.1', first:'1.1.1', q:2, p:2, d:{en:'Plan the testing, watch progress and steer, then wrap up and hand over.', vi:'Lập kế hoạch kiểm thử, theo dõi tiến độ và điều chỉnh, rồi kết thúc và bàn giao.'}, a:{en:'Draw the route, watch the fuel gauge and re-route, return the car and write the trip report.', vi:'Vẽ lộ trình, nhìn đồng hồ xăng và đổi đường khi cần, trả xe và viết báo cáo chuyến đi.'}},
+  {id:'1.2', first:'1.2.1', q:6, p:10, d:{en:'Who cares about testing and what situation are we in: lifecycle (sequential, Agile, hybrid), test level, test type.', vi:'Ai quan tâm đến kiểm thử và ta đang ở tình huống nào: vòng đời (tuần tự, Agile, hybrid), mức kiểm thử, loại kiểm thử.'}, a:{en:'Know the passengers\' wishes and the kind of road and weather ahead.', vi:'Biết mong muốn của hành khách và loại đường, thời tiết phía trước.'}},
+  {id:'1.3', first:'1.3.1', q:5, p:9, d:{en:'Spend limited testing effort where failure hurts most: find risks, rate them, test accordingly.', vi:'Dồn công sức kiểm thử hữu hạn vào nơi lỗi gây hại nhất: tìm rủi ro, chấm mức độ, kiểm thử tương ứng.'}, a:{en:'Pack the spare tyre for the likely and costly breakdowns before the umbrella.', vi:'Mang lốp dự phòng cho sự cố hay gặp và tốn kém trước khi nghĩ đến cái ô.'}},
+  {id:'1.4', first:'1.4.1', q:5, p:11, d:{en:'Choose test levels, types and techniques that fit the organization and project; set S.M.A.R.T. objectives and exit criteria.', vi:'Chọn mức, loại và kỹ thuật kiểm thử hợp với tổ chức và dự án; đặt mục tiêu và tiêu chí thoát S.M.A.R.T.'}, a:{en:'Pick the driving style and define exactly what "arrived" means.', vi:'Chọn kiểu lái xe và định nghĩa chính xác thế nào là "đã đến nơi".'}},
+  {id:'1.5', first:'1.5.1', q:4, p:6, d:{en:'Make the next run better: IDEAL cycle, model-based and analytical improvement, retrospectives.', vi:'Làm lần sau tốt hơn: chu trình IDEAL, cải tiến dựa trên mô hình và dựa trên phân tích, retrospective.'}, a:{en:'Debrief after the trip and fix what went wrong.', vi:'Họp rút kinh nghiệm sau chuyến đi và sửa những gì chưa tốt.'}},
+  {id:'1.6', first:'1.6.1', q:4, p:8, d:{en:'Introduce, select, run and retire test tools; weigh costs, benefits, risks and ROI; use tool metrics.', vi:'Đưa vào, chọn, vận hành và thay thế công cụ; cân nhắc chi phí, lợi ích, rủi ro, ROI; dùng số đo từ công cụ.'}, a:{en:'GPS and gadgets: worth buying, who learns it, when to replace.', vi:'GPS và đồ nghề: có đáng mua không, ai học dùng, khi nào thay.'}},
+  {id:'2.1', first:'2.1.1', q:4, p:8, d:{en:'Metrics that show progress, quality and risk, and reports that help stakeholders decide.', vi:'Số đo thể hiện tiến độ, chất lượng, rủi ro và báo cáo giúp các bên liên quan ra quyết định.'}, a:{en:'The dashboard and the trip log.', vi:'Bảng đồng hồ và nhật ký hành trình.'}},
+  {id:'2.2', first:'2.2.1', q:3, p:7, d:{en:'How much testing effort and time to plan: factors and estimation techniques.', vi:'Cần dự trù bao nhiêu công sức và thời gian kiểm thử: các yếu tố và kỹ thuật ước lượng.'}, a:{en:'Estimate the drive time and budget before leaving.', vi:'Ước tính thời gian lái và ngân sách trước khi đi.'}},
+  {id:'2.3', first:'2.3.1', q:8, p:12, d:{en:'The life of a defect from report to closure: workflow, participants, Agile/hybrid specifics, report data and improvement.', vi:'Vòng đời của lỗi từ lúc báo cáo đến khi đóng: quy trình, người tham gia, đặc thù Agile/hybrid, dữ liệu báo cáo và cải tiến.'}, a:{en:'Breakdown tickets at the garage, tracked until fixed.', vi:'Phiếu sự cố ở gara, theo dõi đến khi sửa xong.'}},
+  {id:'3.1', first:'3.1.1', q:6, p:10, d:{en:'The team: skills in four areas, analysing needs, assessing, developing, managing and motivating people.', vi:'Đội ngũ: kỹ năng trong bốn lĩnh vực, phân tích nhu cầu, đánh giá, phát triển, quản lý và động viên.'}, a:{en:'Choose the crew and keep morale up.', vi:'Chọn đội hành trình và giữ tinh thần cao.'}},
+  {id:'3.2', first:'3.2.1', q:3, p:5, d:{en:'Show testing is worth the money: cost of quality and cost-benefit.', vi:'Chứng minh kiểm thử đáng đồng tiền: chi phí chất lượng và chi phí–lợi ích.'}, a:{en:'Show the sponsors the trip was worth its price.', vi:'Cho nhà tài trợ thấy chuyến đi xứng đáng với chi phí.'}}
+ ]
+};
+function overviewHtml() {
+  const B = (en, vi) => T({ en, vi });
+  const go = (id, en, vi, cls) => `<button class="fb ${cls || ''}" data-theory="${id}"><b>${esc(lang === 'vi' ? vi : en)}</b></button>`;
+  const flow = `<div class="flow">
+    <button class="fb alt" data-theory="1.3.1"><b>${L('Risk', 'Rủi ro')} → ${L('Strategy', 'Chiến lược')}</b><small>1.3 · 1.4</small></button><div class="arr">→</div>
+    <button class="fb" data-theory="1.1.1"><b>${L('Plan', 'Lập kế hoạch')}</b><small>1.1.1 · 2.2</small></button><div class="arr">→</div>
+    <button class="fb" data-theory="1.1.2"><b>${L('Monitor & control', 'Giám sát & kiểm soát')}</b><small>1.1.2 · 2.1 · 2.3</small></button><div class="arr">→</div>
+    <button class="fb" data-theory="1.1.3"><b>${L('Complete', 'Hoàn tất')}</b><small>1.1.3 · 2.1.3</small></button><div class="arr">→</div>
+    <button class="fb alt" data-theory="1.5.1"><b>${L('Improve', 'Cải tiến')}</b><small>1.5 · 2.3.6</small></button></div>
+    <div class="small sub" style="text-align:center">↺ ${L('lessons learned feed the next plan', 'bài học rút ra quay lại làm đầu vào cho kế hoạch kế tiếp')}</div>
+    <div class="around"><b>${L('Around everything', 'Bao quanh tất cả')}:</b>
+      <button data-theory="1.2.1">1.2 ${L('Context & stakeholders', 'Bối cảnh & bên liên quan')}</button><button data-theory="1.6.1">1.6 ${L('Tools', 'Công cụ')}</button><button data-theory="3.1.1">3.1 ${L('Team', 'Đội ngũ')}</button><button data-theory="3.2.1">3.2 ${L('Value of testing', 'Giá trị kiểm thử')}</button></div>`;
+  const chapters = OV.chapters.map(ch => {
+    const secs = OV.secs.filter(s => s.id[0] === ch.c);
+    return `<div class="chc"><h4>${L('Chapter', 'Chương')} ${ch.c} – ${esc(lang === 'vi' ? ch.vi : ch.en)}</h4>
+      <div class="small sub">${T(ch.d)}</div>
+      <div class="w"><span>${ch.q} ${L('questions', 'câu')} · ${ch.p}/88 ${L('pts', 'điểm')} (${Math.round(ch.p / 88 * 100)}%)</span><div class="bar"><i style="width:${ch.p / 88 * 100}%"></i></div></div>
+      <div style="margin-top:8px">${secs.map(s => `<button class="secrow" data-theory="${s.first}"><b>${s.id} ${esc(lang === 'vi' ? LO.sections[s.id].vi : LO.sections[s.id].en)}</b>
+        <div class="d">${T(s.d)}</div><div class="a">${L('Road-trip analogy', 'Ví dụ chuyến đi')}: ${esc(lang === 'vi' ? s.a.vi : s.a.en)}</div>
+        <div class="w"><span>${s.q} ${L('q', 'câu')} · ${s.p} ${L('pts', 'điểm')}</span><div class="bar"><i style="width:${s.p / 12 * 100}%"></i></div></div></button>`).join('')}</div></div>`;
+  }).join('');
+  return `<div class="panel theory ov">
+    <h2>${L('Overview: the big picture', 'Tổng quan: bức tranh lớn')}</h2>
+    <div class="lead">${B('A <b>test manager</b> does not mainly run tests; they make sure the right testing happens, on time, for the right risks, with the right people and tools, and that stakeholders can see the result and decide. The syllabus follows exactly that: how to run testing (Ch.1), what we learn about the product (Ch.2), and the people side (Ch.3).', 'Một <b>quản lý kiểm thử</b> không chủ yếu đi chạy test; họ đảm bảo việc kiểm thử đúng được thực hiện, đúng hạn, đúng rủi ro, với đúng người và công cụ, và các bên liên quan nhìn thấy kết quả để ra quyết định. Giáo trình đi đúng theo mạch đó: cách tổ chức kiểm thử (Ch.1), ta biết gì về sản phẩm (Ch.2), và phần con người (Ch.3).')}</div>
+    <h3>${L('How the pieces connect', 'Các phần liên kết với nhau thế nào')}</h3>
+    <div class="small sub">${L('Click any box to open it.', 'Bấm vào ô bất kỳ để mở.')}</div>${flow}
+    <h3>${L('Imagine you are organizing a big group road trip', 'Hãy hình dung bạn đang tổ chức một chuyến đi chơi xa cho cả nhóm')}</h3>
+    <div class="small sub" style="margin-bottom:8px">${L('Each section below has a one-line meaning, a road-trip analogy, and how many exam questions/points it carries.', 'Mỗi mục dưới đây có nghĩa một dòng, một ví dụ chuyến đi và số câu/điểm trong đề thi.')}</div>
+    <div class="chg">${chapters}</div>
+    <h3>${L('Suggested study order', 'Thứ tự học gợi ý')}</h3>
+    <ol class="steps">
+      <li>${B('Read the exam page and this overview once (10 min).', 'Đọc trang "Về kỳ thi" và phần tổng quan này một lần (10 phút).')}</li>
+      <li>${B('Chapter 1 first: it is 46 of 88 points. Start with 1.1 and 1.3, then 1.4 (K3/K4 heavy).', 'Học Chương 1 trước: chiếm 46/88 điểm. Bắt đầu 1.1 và 1.3, rồi 1.4 (nhiều câu K3/K4).')}</li>
+      <li>${B('Chapter 2: practise the K3 items (defect workflow 2.3.1, defect data 2.3.5) and choosing an estimation technique (2.2.3).', 'Chương 2: luyện các câu K3 (quy trình lỗi 2.3.1, dữ liệu lỗi 2.3.5) và chọn kỹ thuật ước lượng (2.2.3).')}</li>
+      <li>${B('Chapter 3: short but has calculations: cost of quality and cost-benefit (3.2).', 'Chương 3: ngắn nhưng có tính toán: chi phí chất lượng và chi phí–lợi ích (3.2).')}</li>
+      <li>${B('Do a full mock exam, read every explanation, then jump back to the linked theory for each mistake.', 'Làm một đề thi thử đầy đủ, đọc mọi giải thích, rồi bấm sang lý thuyết liên quan cho từng câu sai.')}</li>
+    </ol>
+  </div>`;
+}
 function renderTheory() {
-  if (!view.id) view.id = 'exam';
+  if (!view.id) view.id = 'overview';
+  if (view.id === 'overview') {
+    app.innerHTML = `<div class="wrap">
+      <div class="top"><div><h1>ISTQB® CTAL-TM v3.0</h1></div>${langSeg()}</div>${tabs('theory')}
+      <div class="tlayout"><div class="panel toc" id="tocbox"><input id="tsearch" placeholder="${L('Search topic / term…', 'Tìm chủ đề / thuật ngữ…')}" value="${esc(view.q || '')}"><div id="toc">${tocHtml()}</div></div>${overviewHtml()}</div></div>`;
+    return;
+  }
   const idx = THEORY.findIndex(t => t.id === view.id), t = THEORY[idx >= 0 ? idx : 0];
   const lo = LO.los[t.lo];
   const rel = related(t.id), byExam = {};
@@ -396,7 +484,7 @@ function reviewCard(q, res, g) {
 document.addEventListener('click', ev => {
   const t = ev.target, d = t.closest('[data-tab],[data-theory],[data-qgo],[data-lang],[data-dur],[data-start],[data-restart],[data-review],[data-goto],[data-filter],[data-jump],.opt:not(.rv),#flag,#prev,#next,#home,#submit,#wipe');
   if (!d) return;
-  if (d.dataset.tab) { if (d.dataset.tab === 'theory') go({ name: 'theory', id: (view.name === 'theory' && view.id) || 'exam', q: '' }); else go({ name: 'home' }); return; }
+  if (d.dataset.tab) { if (d.dataset.tab === 'theory') go({ name: 'theory', id: (view.name === 'theory' && view.id) || 'overview', q: '' }); else go({ name: 'home' }); return; }
   if (d.dataset.theory) { const q = view.name === 'theory' ? view.q : ''; view = { name: 'theory', id: d.dataset.theory, q }; render(); return; }
   if (d.dataset.qgo) {
     const [i, n] = d.dataset.qgo.split(':'); view = { name: 'result', i: +i, filter: 'all' }; render();
@@ -445,7 +533,7 @@ document.addEventListener('keydown', ev => {
   if (ev.key === 'ArrowLeft' && S.idx > 0) { S.idx--; persist(); render(); }
 });
 window.addEventListener('beforeunload', () => { if (view.name === 'exam' && S) persist(); });
-if (location.hash.startsWith('#theory')) view = { name: 'theory', id: location.hash.split('/')[1] || 'exam', q: '' };
+if (location.hash.startsWith('#theory')) view = { name: 'theory', id: location.hash.split('/')[1] || 'overview', q: '' };
 render();
 </script>
 </body>
